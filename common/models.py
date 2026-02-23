@@ -4,13 +4,31 @@ from django.db import models
 class Subject(models.Model):
     name = models.CharField(max_length=200)
 
-class SchollClass(models.Model):
+    def __str__(self):
+        return self.name
+
+    def __repr__(self):
+        return self.name
+
+class SchoolClass(models.Model):
     start_year = models.IntegerField()
     letter = models.CharField(max_length=1)
 
+    def __str__(self):
+        return f"{self.letter} class {self.start_year}"
+
+    def __repr__(self):
+        return f"{self.letter} class {self.start_year}"
+
 class StudentClass(models.Model):
     student = models.ForeignKey('auth.User', on_delete=models.CASCADE)
-    school_class = models.ForeignKey('SchollClass', on_delete=models.CASCADE)
+    school_class = models.ForeignKey('SchoolClass', on_delete=models.CASCADE)
+
+    def __repr__(self):
+        return f"{self.student.username} {self.school_class.letter} -> {self.school_class.start_year}"
+
+    def __str__(self):
+        return f"{self.student.username} {self.school_class.letter} -> {self.school_class.start_year}"
 
 class Contacts(models.Model):
     user = models.ForeignKey('auth.User', on_delete=models.CASCADE)
@@ -23,16 +41,16 @@ class Lesson(models.Model):
     lesson_name = models.CharField(max_length=20)
     description = models.TextField()
     home_work = models.TextField()
-    shool_class = models.ForeignKey('SchollClass', on_delete=models.CASCADE)
+    school_class = models.ForeignKey('SchoolClass', on_delete=models.CASCADE)
 
 class File(models.Model):
     file_path = models.FileField(upload_to='files/')
     lesson = models.ForeignKey('Lesson', on_delete=models.CASCADE)
 
 class Grades(models.Model):
-    student = models.ForeignKey('Subject', on_delete=models.CASCADE)
+    student = models.ForeignKey('auth.User', on_delete=models.CASCADE, related_name='grades_as_student')
     lesson = models.ForeignKey('Lesson', on_delete=models.CASCADE)
-    teacher = models.ForeignKey('auth.User', on_delete=models.CASCADE)
+    teacher = models.ForeignKey('auth.User', on_delete=models.CASCADE, related_name='grades_as_teacher')
 
 class Student_Home_Work(models.Model):
     student = models.ForeignKey('auth.User', on_delete=models.CASCADE)

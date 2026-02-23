@@ -4,7 +4,7 @@ from django.shortcuts import render
 def parents_page(request):
     return 'ok'
 
-def parents_student(request, student_id):
+def parent_student(request, student_id):
     return f'ok {student_id}'
 
 def parents_lessons(request, lesson_id):

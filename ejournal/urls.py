@@ -16,10 +16,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-
+from django.contrib.auth import login
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('/', include("common.urls")),
+    path('', include("common.urls")),
     path('student/', include("student.urls")),
     path('parents/', include("parents.urls")),
     path('teacher/', include("teacher.urls")),
