@@ -2,37 +2,43 @@ from django.contrib import auth
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
+from django.views import View
 
 from common.tools import group_required
 from common.Forms import RegisterForm, LoginForm
 
-
 # Create your views here.
-def login(request):
-    if request.method == 'POST':
-        user_login = LoginForm(request.POST)
+class LoginView(View):
+    form = LoginForm
+    template_name = "login.html"
+
+    def get(self, request):
+        return render(request, self.template_name, context={"form": self.form()})
+
+    def post(self, request):
+        user_login = self.form(request.POST)
         user_login.is_valid()
-        user = auth.authenticate(request, username=user_login.cleaned_data["login"], password=user_login.cleaned_data["password"])
+        user = auth.authenticate(request, username=user_login.cleaned_data["login"],
+                                 password=user_login.cleaned_data["password"])
         if user is not None:
             auth.login(request, user)
             return redirect('/user/' + str(user.id) + '/')
         else:
-            return render(request, "login.html", context={"error": "wrong login or password"})
-    else:
-        form = LoginForm()
-        context = {"form": form}
-        return render(request, "login.html", context)
+            return render(request, self.template_name, context={"error": "wrong login or password"})
 
-def register(request):
-    if request.method == 'POST':
-        user= RegisterForm(request.POST)
+
+class RegisterView(View):
+    form = RegisterForm
+    template_name = "register.html"
+
+    def get(self, request):
+        return render(request, self.template_name, context={"form": self.form()})
+
+    def post(self, request):
+        user = self.form(request.POST)
         user.is_valid()
         user.save()
         return redirect('login')
-    else:
-        form = RegisterForm()
-        context = {"form": form}
-        return render(request,'register.html', context)
 
 
 
